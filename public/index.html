@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Legal Document Simplifier</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Updated navbar for legal document context -->
+    <nav class="navbar">
+        <div class="nav-content">
+            <div class="logo">
+                <div class="logo-icon">⚖️</div>
+                <span class="logo-text">Legal Document Simplifier</span>
+            </div>
+            <div class="nav-actions">
+                <!-- Theme toggle button -->
+                <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+                    <span class="theme-icon">🌙</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Updated hero section for legal document analysis -->
+        <section class="hero-section">
+            <h1 class="hero-title">Simplify Legal Documents</h1>
+            <p class="hero-subtitle">Upload contracts, agreements, or legal text to get plain-English explanations and risk assessments powered by AI.</p>
+            
+            <div class="search-container">
+                <div class="search-box">
+                    <div class="search-input-container">
+                        <span class="search-icon">🔍</span>
+                        <input type="text" id="searchInput" placeholder="Enter legal text to analyze or ask questions about uploaded documents" />
+                    </div>
+                    <!-- Upload button for legal documents -->
+                    <input type="file" class="upload-input" id="uploadInput" accept=".pdf,.txt" />
+                    <button class="upload-btn" onclick="document.getElementById('uploadInput').click()">📤 Upload Document</button>
+                </div>
+                
+                <!-- Document display area -->
+                <div class="document-display" id="documentDisplay">
+                    <div class="document-info">
+                        <span class="document-icon">📄</span>
+                        <div class="document-details">
+                            <div class="document-name" id="documentName">No document selected</div>
+                            <div class="document-meta" id="documentMeta">Upload a PDF or text file for legal analysis</div>
+                        </div>
+                        <button class="document-remove" id="documentRemove">✕</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Main content sections updated for legal analysis -->
+        <main class="main-content">
+            <!-- Legal Analysis Section -->
+            <section class="content-section">
+                <h2 class="section-title">Legal Analysis</h2>
+                <div class="results-container">
+                    <div id="loader" class="loader hidden">
+                        <div class="spinner"></div>
+                        <p>Analyzing legal document...</p>
+                    </div>
+                    <div id="results" class="results-content">
+                        <p class="no-results">Upload a legal document or paste text above to get started with AI-powered analysis.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Analysis Summary Section -->
+            <section class="content-section">
+                <h2 class="section-title">Analysis Summary</h2>
+                <div class="incidents-container">
+                    <p class="no-incidents">Analysis summary and metadata will appear here after processing a document.</p>
+                </div>
+            </section>
+
+            <!-- Risk Overview Section -->
+            <section class="content-section">
+                <h2 class="section-title">Risk Overview</h2>
+                <div class="charts-grid">
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3>Risk Factors</h3>
+                            <span class="chart-period">Current Analysis</span>
+                        </div>
+                        <div class="chart-stats">
+                            <span class="chart-number">0</span>
+                            <span class="chart-change">No data</span>
+                        </div>
+                        <canvas id="violationsChart"></canvas>
+                    </div>
+                    
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3>Action Priority</h3>
+                            <span class="chart-period">Current Analysis</span>
+                        </div>
+                        <div class="chart-stats">
+                            <span class="chart-number">0</span>
+                            <span class="chart-change">No data</span>
+                        </div>
+                        <canvas id="penaltyChart"></canvas>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
