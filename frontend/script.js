@@ -69,65 +69,82 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    function analyzeText() {
-        const text = searchInput.value.trim();
-        if (!text) return;
-
-        showLoader("Analyzing legal text...");
-        
-        fetch(`${BACKEND_URL}/analyze`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ text })
-        })
-        .then(response => response.json())
-        .then(data => {
-            hideLoader();
-            if (data.error) {
-                displayError(data.message);
-            } else {
-                displayAnalysisResults(data);
-            }
-        })
-        .catch(error => {
-            hideLoader();
-            console.error('Analysis error:', error);
-            displayError('Failed to analyze text. Please try again.');
-        });
+    // Search button click functionality
+const searchBtn = document.getElementById("searchBtn");
+searchBtn.addEventListener("click", () => {
+    if (currentFile) {
+        analyzeDocument(searchInput.value.trim());
+    } else {
+        analyzeText();
     }
+});
+
+    function analyzeText() {
+    const text = searchInput.value.trim();
+    if (!text) {
+        displayError('Please enter some legal text to analyze.');
+        return;
+    }
+
+    showLoader("Analyzing legal text...");
+    
+    fetch(`${BACKEND_URL}/analyze`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ text })
+    })
+    .then(response => response.json())
+    .then(data => {
+        hideLoader();
+        if (data.error) {
+            displayError(data.message);
+        } else {
+            displayAnalysisResults(data);
+        }
+    })
+    .catch(error => {
+        hideLoader();
+        console.error('Analysis error:', error);
+        displayError('Failed to analyze text. Please try again.');
+    });
+}
 
     function analyzeDocument(query = null) {
-        if (!currentFile) return;
-
-        showLoader("Processing document...");
-
-        const formData = new FormData();
-        formData.append('document', currentFile);
-        if (query) {
-            formData.append('query', query);
-        }
-
-        fetch(`${BACKEND_URL}/upload`, {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-            hideLoader();
-            if (data.error) {
-                displayError(data.message);
-            } else {
-                displayAnalysisResults(data);
-            }
-        })
-        .catch(error => {
-            hideLoader();
-            console.error('Document analysis error:', error);
-            displayError('Failed to analyze document. Please try again.');
-        });
+    if (!currentFile) {
+        displayError('Please upload a document first.');
+        return;
     }
+
+    const loadingMessage = query ? "Searching document..." : "Processing document...";
+    showLoader(loadingMessage);
+
+    const formData = new FormData();
+    formData.append('document', currentFile);
+    if (query) {
+        formData.append('query', query);
+    }
+
+    fetch(`${BACKEND_URL}/upload`, {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        hideLoader();
+        if (data.error) {
+            displayError(data.message);
+        } else {
+            displayAnalysisResults(data);
+        }
+    })
+    .catch(error => {
+        hideLoader();
+        console.error('Document analysis error:', error);
+        displayError('Failed to analyze document. Please try again.');
+    });
+}
 
     function showLoader(message) {
         loader.querySelector('p').textContent = message;

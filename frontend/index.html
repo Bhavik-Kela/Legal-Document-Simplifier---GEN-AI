@@ -34,15 +34,17 @@
             <p class="hero-subtitle">Upload contracts, agreements, or legal text to get plain-English explanations and risk assessments powered by AI.</p>
             
             <div class="search-container">
-                <div class="search-box">
-                    <div class="search-input-container">
-                        <span class="search-icon">🔍</span>
-                        <input type="text" id="searchInput" placeholder="Enter legal text to analyze or ask questions about uploaded documents" />
-                    </div>
-                    <!-- Upload button for legal documents -->
-                    <input type="file" class="upload-input" id="uploadInput" accept=".pdf,.txt" />
-                    <button class="upload-btn" onclick="document.getElementById('uploadInput').click()">📤 Upload Document</button>
-                </div>
+               <div class="search-box">
+    <div class="search-input-container">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="searchInput" placeholder="Enter legal text to analyze or ask questions about uploaded documents" />
+    </div>
+    <!-- Search button -->
+    <button class="search-btn" id="searchBtn">🔍 Search</button>
+    <!-- Upload button for legal documents -->
+    <input type="file" class="upload-input" id="uploadInput" accept=".pdf,.txt" />
+    <button class="upload-btn" onclick="document.getElementById('uploadInput').click()">📤 Upload Document</button>
+</div>
                 
                 <!-- Document display area -->
                 <div class="document-display" id="documentDisplay">

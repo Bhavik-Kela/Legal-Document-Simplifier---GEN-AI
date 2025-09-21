@@ -122,6 +122,23 @@
           gap: 1rem;
         }
 
+        .search-btn {
+    background: #10b981;
+    color: white;
+    border: none;
+    padding: 0.875rem 1rem;
+    border-radius: 0.5rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.search-btn:hover {
+    background: #059669;
+    transform: translateY(-1px);
+}
+
         /* Replaced user-avatar styles with theme-toggle styles */
         .theme-toggle {
           width: 2rem;
