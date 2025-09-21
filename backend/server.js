@@ -23,7 +23,6 @@ const upload = multer({
 
 // Middleware
 app.use(express.json({ limit: '10mb' }));
-app.use(express.static('public'));
 
 // Initialize Gemini AI
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
@@ -95,7 +94,7 @@ Respond ONLY with valid JSON - no additional text or formatting.`;
 
 // Serve the main HTML file at root
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  res.status(200).json({ message: 'Backend is running ✅' });
 });
 
 /**
@@ -293,8 +292,7 @@ app.use((req, res) => {
       message: `Route ${req.method} ${req.path} not found`
     });
   }
-  
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+
 });
 
 const PORT = process.env.PORT || 3000;

@@ -1,3 +1,5 @@
+const BACKEND_URL = "https://legaldocu.onrender.com";
+
 document.addEventListener("DOMContentLoaded", () => {
     // Theme toggle functionality
     const themeToggle = document.getElementById("themeToggle");
@@ -73,7 +75,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         showLoader("Analyzing legal text...");
         
-        fetch('/analyze', {
+        fetch(`${BACKEND_URL}/analyze`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -107,7 +109,7 @@ document.addEventListener("DOMContentLoaded", () => {
             formData.append('query', query);
         }
 
-        fetch('/upload', {
+        fetch(`${BACKEND_URL}/upload`, {
             method: 'POST',
             body: formData
         })
