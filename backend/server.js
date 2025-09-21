@@ -8,6 +8,9 @@ require('dotenv').config();
 
 const app = express();
 
+const cors = require('cors');
+app.use(cors({ origin: "https://legaldocument.vercel.app" }));
+
 // Configure multer for file uploads
 const upload = multer({ 
   dest: 'uploads/',
