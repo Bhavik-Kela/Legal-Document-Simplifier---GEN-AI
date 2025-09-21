@@ -55,110 +55,141 @@ document.addEventListener("DOMContentLoaded", () => {
     const searchInput = document.getElementById("searchInput");
     const loader = document.getElementById("loader");
     const results = document.getElementById("results");
+    const searchBtn = document.getElementById("searchBtn");
 
     // Update placeholder text for legal context
     searchInput.placeholder = "Enter legal text to analyze or ask a question about uploaded document";
 
+    // Create a unified function to handle search/analysis
+    function handleSearch() {
+        console.log("Search triggered"); // Debug log
+        console.log("Current file:", currentFile); // Debug log
+        console.log("Search input value:", searchInput.value.trim()); // Debug log
+        
+        if (currentFile) {
+            analyzeDocument(searchInput.value.trim());
+        } else {
+            analyzeText();
+        }
+    }
+
+    // Event listeners for search
     searchInput.addEventListener("keypress", (e) => {
         if (e.key === "Enter") {
-            if (currentFile) {
-                analyzeDocument(searchInput.value.trim());
-            } else {
-                analyzeText();
-            }
+            e.preventDefault(); // Prevent form submission if inside a form
+            handleSearch();
         }
     });
 
-    // Search button click functionality
-const searchBtn = document.getElementById("searchBtn");
-searchBtn.addEventListener("click", () => {
-    if (currentFile) {
-        analyzeDocument(searchInput.value.trim());
-    } else {
-        analyzeText();
-    }
-});
+    // Search button click functionality - Fixed
+    searchBtn.addEventListener("click", (e) => {
+        e.preventDefault(); // Prevent any default behavior
+        console.log("Search button clicked"); // Debug log
+        handleSearch();
+    });
 
     function analyzeText() {
-    const text = searchInput.value.trim();
-    if (!text) {
-        displayError('Please enter some legal text to analyze.');
-        return;
-    }
-
-    showLoader("Analyzing legal text...");
-    
-    fetch(`${BACKEND_URL}/analyze`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ text })
-    })
-    .then(response => response.json())
-    .then(data => {
-        hideLoader();
-        if (data.error) {
-            displayError(data.message);
-        } else {
-            displayAnalysisResults(data);
+        const text = searchInput.value.trim();
+        console.log("Analyzing text:", text.substring(0, 50) + "..."); // Debug log
+        
+        if (!text) {
+            displayError('Please enter some legal text to analyze.');
+            return;
         }
-    })
-    .catch(error => {
-        hideLoader();
-        console.error('Analysis error:', error);
-        displayError('Failed to analyze text. Please try again.');
-    });
-}
+
+        showLoader("Analyzing legal text...");
+        
+        fetch(`${BACKEND_URL}/analyze`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ text })
+        })
+        .then(response => {
+            console.log("Response status:", response.status); // Debug log
+            return response.json();
+        })
+        .then(data => {
+            hideLoader();
+            console.log("Analysis data received:", data); // Debug log
+            if (data.error) {
+                displayError(data.message);
+            } else {
+                displayAnalysisResults(data);
+            }
+        })
+        .catch(error => {
+            hideLoader();
+            console.error('Analysis error:', error);
+            displayError('Failed to analyze text. Please try again.');
+        });
+    }
 
     function analyzeDocument(query = null) {
-    if (!currentFile) {
-        displayError('Please upload a document first.');
-        return;
-    }
-
-    const loadingMessage = query ? "Searching document..." : "Processing document...";
-    showLoader(loadingMessage);
-
-    const formData = new FormData();
-    formData.append('document', currentFile);
-    if (query) {
-        formData.append('query', query);
-    }
-
-    fetch(`${BACKEND_URL}/upload`, {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => response.json())
-    .then(data => {
-        hideLoader();
-        if (data.error) {
-            displayError(data.message);
-        } else {
-            displayAnalysisResults(data);
+        console.log("Analyzing document with query:", query); // Debug log
+        
+        if (!currentFile) {
+            displayError('Please upload a document first.');
+            return;
         }
-    })
-    .catch(error => {
-        hideLoader();
-        console.error('Document analysis error:', error);
-        displayError('Failed to analyze document. Please try again.');
-    });
-}
+
+        const loadingMessage = query ? "Searching document..." : "Processing document...";
+        showLoader(loadingMessage);
+
+        const formData = new FormData();
+        formData.append('document', currentFile);
+        if (query) {
+            formData.append('query', query);
+        }
+
+        fetch(`${BACKEND_URL}/upload`, {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => {
+            console.log("Upload response status:", response.status); // Debug log
+            return response.json();
+        })
+        .then(data => {
+            hideLoader();
+            console.log("Document analysis data received:", data); // Debug log
+            if (data.error) {
+                displayError(data.message);
+            } else {
+                displayAnalysisResults(data);
+            }
+        })
+        .catch(error => {
+            hideLoader();
+            console.error('Document analysis error:', error);
+            displayError('Failed to analyze document. Please try again.');
+        });
+    }
 
     function showLoader(message) {
         loader.querySelector('p').textContent = message;
         loader.classList.remove("hidden");
         results.innerHTML = "";
+        console.log("Loader shown with message:", message); // Debug log
     }
 
     function hideLoader() {
         loader.classList.add("hidden");
+        console.log("Loader hidden"); // Debug log
     }
 
     function clearResults() {
         results.innerHTML = '<p class="no-results">No analysis results yet. Upload a document or enter text to analyze.</p>';
         document.querySelector('.incidents-container').innerHTML = '<p class="no-incidents">Analysis results will appear here.</p>';
+        // Clear charts
+        const chartsToDestroy = ['violationsChart', 'penaltyChart'];
+        chartsToDestroy.forEach(chartId => {
+            const canvas = document.getElementById(chartId);
+            if (canvas && canvas.chart) {
+                canvas.chart.destroy();
+            }
+        });
     }
 
     function displayError(message) {
@@ -169,9 +200,12 @@ searchBtn.addEventListener("click", () => {
             </div>
         `;
         results.classList.add('active');
+        console.log("Error displayed:", message); // Debug log
     }
 
     function displayAnalysisResults(data) {
+        console.log("Displaying analysis results:", data); // Debug log
+        
         // Display simplified analysis
         results.innerHTML = `
             <div class="analysis-results">
@@ -263,9 +297,20 @@ searchBtn.addEventListener("click", () => {
 
         // Update charts with risk data
         updateChartsWithRiskData(data);
+        
+        console.log("Analysis results displayed successfully"); // Debug log
     }
 
     function updateChartsWithRiskData(data) {
+        // Destroy existing charts first
+        const chartsToDestroy = ['violationsChart', 'penaltyChart'];
+        chartsToDestroy.forEach(chartId => {
+            const canvas = document.getElementById(chartId);
+            if (canvas && canvas.chart) {
+                canvas.chart.destroy();
+            }
+        });
+
         // Count risk levels
         const riskCounts = { high: 0, medium: 0, low: 0 };
         data.riskAssessment.riskFactors.forEach(factor => {
@@ -275,7 +320,7 @@ searchBtn.addEventListener("click", () => {
         // Update violations chart with risk factors
         const violationsCtx = document.getElementById("violationsChart");
         if (violationsCtx) {
-            new Chart(violationsCtx, {
+            const violationsChart = new Chart(violationsCtx, {
                 type: "bar",
                 data: {
                     labels: ["High Risk", "Medium Risk", "Low Risk"],
@@ -295,6 +340,8 @@ searchBtn.addEventListener("click", () => {
                     },
                 },
             });
+            // Store chart instance for later destruction
+            violationsCtx.chart = violationsChart;
         }
 
         // Update penalty chart with action items priority
@@ -307,7 +354,7 @@ searchBtn.addEventListener("click", () => {
 
         const penaltyCtx = document.getElementById("penaltyChart");
         if (penaltyCtx) {
-            new Chart(penaltyCtx, {
+            const penaltyChart = new Chart(penaltyCtx, {
                 type: "doughnut",
                 data: {
                     labels: ["High Priority", "Medium Priority", "Low Priority"],
@@ -329,7 +376,11 @@ searchBtn.addEventListener("click", () => {
                     }
                 }
             });
+            // Store chart instance for later destruction
+            penaltyCtx.chart = penaltyChart;
         }
+
+        console.log("Charts updated with new data"); // Debug log
     }
 
     // Update section titles for legal context
